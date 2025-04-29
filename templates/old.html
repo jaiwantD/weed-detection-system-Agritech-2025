@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Prediction</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Crop Prediction System</h2>
+    <div class="container">
+        <input type="number" id="N" placeholder="Nitrogen">
+        <input type="number" id="P" placeholder="Phosphorus">
+        <input type="number" id="K" placeholder="Potassium">
+        <input type="number" id="temp" placeholder="Temperature">
+        <input type="number" id="humidity" placeholder="Humidity">
+        <input type="number" id="ph" placeholder="pH Level">
+        <input type="number" id="rainfall" placeholder="Rainfall">
+        <button onclick="predictCrop()">Predict Crop</button>
+        <button onclick="startDetection()">Start Detection</button>
+        <h3 id="result"></h3>
+    </div>
+
+    <script>
+        function predictCrop() {
+            let data = {
+                N: parseFloat(document.getElementById('N').value),
+                P: parseFloat(document.getElementById('P').value),
+                K: parseFloat(document.getElementById('K').value),
+                temp: parseFloat(document.getElementById('temp').value),
+                humidity: parseFloat(document.getElementById('humidity').value),
+                ph: parseFloat(document.getElementById('ph').value),
+                rainfall: parseFloat(document.getElementById('rainfall').value)
+            };
+
+            $.ajax({
+                url: '/predict_crop',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    document.getElementById('result').innerText = "Predicted Crop: " + response.predicted_crop;
+                },
+                error: function() {
+                    alert("Error predicting crop");
+                }
+            });
+        }
+
+        function startDetection() {
+            $.ajax({
+                url: '/start-detection',
+                type: 'GET',
+                success: function(response) {
+                    alert("Detection Started");
+                },
+                error: function() {
+                    alert("Error starting detection");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriculture Assistant</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f7f9f7;
+        }
+        
+        .header {
+            background-color: #2e7d32;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+         
+        .temperature-widget {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .temperature-widget .temp-icon {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subheader {
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .intro {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .intro h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #2e7d32;
+        }
+        
+        .intro p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 350px;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .crop-image {
+            background-image: url('/static/images/img1.jpg');
+            background-color: #81c784;
+        }
+        
+        .weed-image {
+            background-image: url('/static/images/img2.jpg');
+            background-color: #a5d6a7;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #2e7d32;
+        }
+        
+        .card-content p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #1b5e20;
+        }
+        
+        /* Form styling for popup */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .popup {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .popup h2 {
+            color: #2e7d32;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .close-btn {
+            background-color: #f44336;
+        }
+        
+        .close-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #e8f5e9;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="temperature-widget">
+            <span class="temp-icon">🌡️</span>
+            23°C
+        </div>
+        <h1>AGROGENIUS</h1>
+        <div class="subheader"><h3>AI Smart Solutions for Modern Farming</h3></div>
+    </div>
+    
+    <div class="container">
+        <div class="intro">
+            <h2>Welcome to AgroGenius - AI Accelerated Agriculture Assistant</h2>
+            <p>Our intelligent system helps farmers make data-driven decisions to optimize crop yield and manage resources efficiently. Using advanced machine learning algorithms, we provide accurate crop recommendations based on soil conditions and environmental factors, as well as weed detection capabilities to protect your crops.</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="card-image crop-image" style="width: 350px; height: 200px;"></div>
+                <div class="card-content">
+                    <h3>Crop Prediction</h3>
+                    <p>Get personalized crop recommendations based on soil nutrients (N, P, K), pH level, temperature, humidity, and rainfall data. Our system analyzes these parameters to suggest the most suitable crop for your land.</p>
+                    <button class="btn" onclick="openCropForm()">Predict Crop</button>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="card-image weed-image" style="width: 350px; height: 200px;"></div>
+                <div class="card-content">
+                    <h3>Weed Detection</h3>
+                    <p>Identify unwanted weeds in your fields using our advanced detection system. Early detection helps in timely intervention, reducing herbicide usage and protecting crop yield. Simply start the detection process with a click.</p>
+                    <button class="btn" onclick="startDetection()">Start Detection</button> 
+                    <button class="btn" onclick="stopDetection()">Stop Detection</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Crop Prediction Form Popup -->
+    <div class="overlay" id="cropFormOverlay">
+        <div class="popup">
+            <h2>Crop Prediction</h2>
+            <div class="form-group">
+                <label for="N">Nitrogen (N) Content (kg/ha)</label>
+                <input type="number" id="N" placeholder="e.g., 90">
+            </div>
+            <div class="form-group">
+                <label for="P">Phosphorus (P) Content (kg/ha)</label>
+                <input type="number" id="P" placeholder="e.g., 40">
+            </div>
+            <div class="form-group">
+                <label for="K">Potassium (K) Content (kg/ha)</label>
+                <input type="number" id="K" placeholder="e.g., 50">
+            </div>
+            <div class="form-group">
+                <label for="temp">Temperature (°C)</label>
+                <input type="number" id="temp" placeholder="e.g., 25">
+            </div>
+            <div class="form-group">
+                <label for="humidity">Humidity (%)</label>
+                <input type="number" id="humidity" placeholder="e.g., 80">
+            </div>
+            <div class="form-group">
+                <label for="ph">pH Level</label>
+                <input type="number" id="ph" step="0.1" placeholder="e.g., 6.5">
+            </div>
+            <div class="form-group">
+                <label for="rainfall">Rainfall (mm)</label>
+                <input type="number" id="rainfall" placeholder="e.g., 200">
+            </div>
+            
+            <div class="result-container" id="result-container">
+                <h3 id="result">Predicted Crop: </h3>
+            </div>
+            
+            <div class="popup-buttons">
+                <button class="btn close-btn" onclick="closeCropForm()">Close</button>
+                <button class="btn" onclick="predictCrop()">Predict</button>
+                
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 AgroGenius | Smart Farming Solution</p>
+    </footer>
+
+    <script>
+        function openCropForm() {
+            document.getElementById('cropFormOverlay').style.display = 'flex';
+        }
+        
+        function closeCropForm() {
+            document.getElementById('cropFormOverlay').style.display = 'none';
+        }
+        
+        function predictCrop() {
+            // Validate inputs
+            const requiredFields = ['N', 'P', 'K', 'temp', 'humidity', 'ph', 'rainfall'];
+            for (const field of requiredFields) {
+                if (!document.getElementById(field).value) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+            }
+            
+            let data = {
+                N: parseFloat(document.getElementById('N').value),
+                P: parseFloat(document.getElementById('P').value),
+                K: parseFloat(document.getElementById('K').value),
+                temp: parseFloat(document.getElementById('temp').value),
+                humidity: parseFloat(document.getElementById('humidity').value),
+                ph: parseFloat(document.getElementById('ph').value),
+                rainfall: parseFloat(document.getElementById('rainfall').value)
+            };
+
+            $.ajax({
+                url: '/predict_crop',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    document.getElementById('result').innerText = "Predicted Crop: " + response.predicted_crop;
+                    document.getElementById('result-container').style.display = 'block';
+                },
+                error: function() {
+                    alert("Error predicting crop");
+                }
+            });
+        }
+
+        function startDetection() {
+            $.ajax({
+                url: '/start-detection',
+                type: 'GET',
+                success: function(response) {
+                    alert("Weed detection process has started successfully!");
+                },
+                error: function() {
+                    alert("Error starting weed detection process");
+                }
+            });
+        }
+        function stopDetection() {
+            $.ajax({
+                url: '/stop-detection',
+                type: 'GET',
+                success: function(response) {
+                    alert("Weed detection process stopped has successfully!");
+                },
+                error: function() {
+                    alert("Error starting weed detection process");
+                }
+            });
+        }
+        
+        // Close popup when clicking outside
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('cropFormOverlay')) {
+                closeCropForm();
+            }
+        }
+    </script>
+</body>
+</html>
